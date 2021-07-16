@@ -1,7 +1,7 @@
-import Layout from '@/components/Layout';
+import Layout from 'components/Layout';
 import { NextPage } from 'next';
 import { FaExclamationTriangle } from 'react-icons/fa';
-import styles from '@/styles/404.module.css';
+import styles from 'styles/404.module.css';
 import Link from 'next/link';
 const NotFoundPage: NextPage = () => {
   return (

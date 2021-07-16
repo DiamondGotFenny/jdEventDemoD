@@ -1,9 +1,9 @@
+import { NextApiHandler } from 'next';
+
 const { events } = require('./data.json');
 
-const djEvent = (req, res) => {
+const djEvent: NextApiHandler = (req, res) => {
   const evt = events.filter((evt) => evt.slug === req.query.slug);
-
-  console.log(req.method);
   if (req.method === 'GET') {
     res.status(200).json(evt);
   } else {

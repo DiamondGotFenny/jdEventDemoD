@@ -1,7 +1,7 @@
 import { NextPage } from 'next';
 import Head from 'next/head';
-import styles from '@/styles/Layout.module.css';
-import Header from '@/components/Header';
+import styles from 'styles/Layout.module.css';
+import Header from 'components/Header';
 import Footer from './Footer';
 import { useRouter } from 'next/dist/client/router';
 import Showcase from './Showcase';

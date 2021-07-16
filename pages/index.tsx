@@ -1,11 +1,23 @@
 import { NextPage } from 'next';
 import Link from 'next/link';
-import Layout from '@/components/Layout';
+import Layout from 'components/Layout';
 import { GetServerSideProps } from 'next';
-import { NEXT_URL } from '@/config/index';
-import EventItem from '@/components/EventItem';
-type props = { events: [] };
-const Home: NextPage<props> = ({ events }) => {
+import { API_URL } from 'config/index';
+import EventItem from 'components/EventItem';
+type evt = {
+  id: string;
+  name: string;
+  slug: string;
+  venue: string;
+  address: string;
+  performers: string;
+  date: string;
+  time: string;
+  description: string;
+  image: { formats: { thumbnail: { url: string } } };
+};
+type Props = { events: evt[] };
+const Home: NextPage<Props> = ({ events }) => {
   return (
     <Layout>
       <h1>Upcoming Events</h1>
@@ -22,10 +34,13 @@ const Home: NextPage<props> = ({ events }) => {
   );
 };
 export default Home;
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  const res = await fetch(`${NEXT_URL}/api/events`);
-  const events: [] = await res.json();
+
+export async function getStaticProps() {
+  const res = await fetch(`${API_URL}/events?_sort=date:ASC&_limit=3`);
+  const events = await res.json();
+
   return {
-    props: { events: events.slice(0, 3) },
+    props: { events },
+    revalidate: 1,
   };
-};
+}

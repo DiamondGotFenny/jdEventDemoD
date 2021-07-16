@@ -1,12 +1,12 @@
 import { NextPage } from 'next';
 import { useRouter } from 'next/dist/client/router';
-import Layout from '@/components/Layout';
+import Layout from 'components/Layout';
 import { GetServerSideProps } from 'next';
-import { NEXT_URL } from '@/config/index';
-import { FaPencilAlt, FaTimes } from 'react-icons/fa';
+import { API_URL } from 'config/index';
+
 import Link from 'next/link';
 import Image from 'next/image';
-import styles from '@/styles/Event.module.css';
+import styles from 'styles/Event.module.css';
 type props = {
   evt: {
     id: string;
@@ -18,22 +18,23 @@ type props = {
     date: string;
     time: string;
     description: string;
-    image: string;
+    image: { formats: { medium: { url: string } } };
   };
 };
 const EventPage: NextPage<props> = ({ evt }) => {
   const router = useRouter();
+  const date: string = new Date(evt.date).toLocaleDateString('en-Us');
   return (
     <Layout title={evt.name}>
       <div className={styles.event}>
         <span>
-          {new Date(evt.date).toLocaleDateString('en-Us')} at {evt.time}
+          {date} at {evt.time}
         </span>
         <h1>{evt.name}</h1>
         {evt.image && (
           <div className={styles.image}>
             <Image
-              src={evt.image}
+              src={evt.image.formats.medium.url}
               alt={`DJ Event ${evt.name}`}
               width={960}
               height={600}
@@ -59,7 +60,7 @@ export default EventPage;
 export const getServerSideProps: GetServerSideProps = async ({
   query: { slug },
 }) => {
-  const res = await fetch(`${NEXT_URL}/api/events/${slug}`);
+  const res = await fetch(`${API_URL}/events?slug=${slug}`);
   const events = await res.json();
   return {
     props: { evt: events[0] },

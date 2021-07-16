@@ -1,4 +1,4 @@
-import styles from '@/styles/EventItem.module.css';
+import styles from 'styles/EventItem.module.css';
 import { NextPage } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -13,7 +13,7 @@ type props = {
     date: string;
     time: string;
     description: string;
-    image: string;
+    image: { formats: { thumbnail: { url: string } } };
   };
 };
 const EventItem: NextPage<props> = ({ evt }) => {
@@ -21,7 +21,11 @@ const EventItem: NextPage<props> = ({ evt }) => {
     <div className={styles.event}>
       <div className={styles.img}>
         <Image
-          src={evt.image ? evt.image : '/images/event-default.png'}
+          src={
+            evt.image
+              ? evt.image.formats.thumbnail.url
+              : '/images/event-default.png'
+          }
           width={170}
           height={100}
           alt="event thumbnail"

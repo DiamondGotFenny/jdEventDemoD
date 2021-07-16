@@ -1,4 +1,4 @@
-import styles from '@/styles/Showcase.module.css';
+import styles from 'styles/Showcase.module.css';
 const Showcase = () => {
   return (
     <div className={styles.showcase}>

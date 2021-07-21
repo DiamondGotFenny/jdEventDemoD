@@ -11,6 +11,8 @@ import { useRouter } from 'next/router';
 import 'react-toastify/dist/ReactToastify.css';
 import { NextPage } from 'next';
 import ImageUpload from 'components/ImageUpload';
+import { parseCookies } from 'helpers/index';
+import omit from 'lodash/omit';
 type DJEvent = {
   id: string;
   name: string;
@@ -20,10 +22,10 @@ type DJEvent = {
   date: string;
   time: string;
   description: string;
-  image: { formats: { thumbnail: { url: string | null } } };
+  image: { formats: { thumbnail: { url: string | '' } } };
 };
-type Props = { evt: DJEvent };
-const EditEventPage: NextPage<Props> = ({ evt }) => {
+type Props = { evt: DJEvent; token: string };
+const EditEventPage: NextPage<Props> = ({ evt, token }) => {
   const router = useRouter();
 
   const defaultEventValues = {
@@ -35,11 +37,11 @@ const EditEventPage: NextPage<Props> = ({ evt }) => {
     date: evt.date,
     time: evt.time,
     description: evt.description,
-    image: { formats: { thumbnail: { url: null } } },
+    image: { formats: { thumbnail: { url: '' } } },
   };
   const [values, setValues] = useState<DJEvent>(defaultEventValues);
   const [imagePreview, setImagePreview] = useState(
-    evt.image ? evt.image.formats.thumbnail.url : null
+    evt.image ? evt.image.formats.thumbnail.url : ''
   );
   const [showModel, setShowModel] = useState(false);
   const handleSubmit = async (e) => {
@@ -51,15 +53,25 @@ const EditEventPage: NextPage<Props> = ({ evt }) => {
     );
     if (hasEmptyFields) {
       toast.error('Please Fill in All fields');
+      return;
     }
+    //we need to exclude the image property from evt obj
+    //if not, the image will be stringify and become unavailble
+    const newVal = omit(values, 'image');
     const res = await fetch(`${API_URL}/events/${evt.id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify(values),
+
+      body: JSON.stringify(newVal),
     });
     if (!res.ok) {
+      if (res.status === 403 || res.status === 401) {
+        toast.error('Unauthorized');
+        return;
+      }
       toast.error('Something Went Wrong');
     } else {
       const evt = await res.json();
@@ -183,20 +195,25 @@ const EditEventPage: NextPage<Props> = ({ evt }) => {
       </div>
 
       <Modal show={showModel} onClose={() => setShowModel(false)}>
-        <ImageUpload evtId={evt.id} imageUploaded={imageUploaded} />
+        <ImageUpload
+          evtId={evt.id}
+          imageUploaded={imageUploaded}
+          token={token}
+        />
       </Modal>
     </Layout>
   );
 };
 
 export default EditEventPage;
-export async function getServerSideProps({ params: { id } }) {
+export async function getServerSideProps({ params: { id }, req }) {
   const res = await fetch(`${API_URL}/events/${id}`);
   const evt = await res.json();
-
+  const { token } = parseCookies(req);
   return {
     props: {
       evt,
+      token,
     },
   };
 }

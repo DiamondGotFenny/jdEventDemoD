@@ -1,7 +1,7 @@
 import styles from 'styles/Form.module.css';
 import { useState } from 'react';
 import { API_URL } from 'config/index';
-const ImageUpload = ({ evtId, imageUploaded }) => {
+const ImageUpload = ({ evtId, imageUploaded, token }) => {
   const [image, setImage] = useState(null);
   const handleSubmit = async (e) => {
     //don't hit the update event button in the event form, or the image will be stringify, and it will not work.
@@ -14,6 +14,7 @@ const ImageUpload = ({ evtId, imageUploaded }) => {
 
     const res = await fetch(`${API_URL}/upload`, {
       method: 'POST',
+      headers: { Authorization: `Bearer ${token}` },
       body: formData,
     });
     if (res.ok) {

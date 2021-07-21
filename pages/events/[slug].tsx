@@ -18,7 +18,7 @@ type props = {
     date: string;
     time: string;
     description: string;
-    image: { formats: { medium: { url: string } } };
+    image: { formats: { medium: { url: string | '' } } };
   };
 };
 const EventPage: NextPage<props> = ({ evt }) => {

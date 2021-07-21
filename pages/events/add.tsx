@@ -7,6 +7,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import { useRouter } from 'next/router';
 import 'react-toastify/dist/ReactToastify.css';
 import { NextPage } from 'next';
+import { parseCookies } from 'helpers/index';
 type NewEvent = {
   name: string;
   performers: string;
@@ -16,7 +17,8 @@ type NewEvent = {
   time: string;
   description: string;
 };
-const Add: NextPage = () => {
+type Props = { token: string };
+const Add: NextPage<Props> = ({ token }) => {
   const defaultEventValues = {
     name: '',
     performers: '',
@@ -37,15 +39,21 @@ const Add: NextPage = () => {
     );
     if (hasEmptyFields) {
       toast.error('Please Fill in All fields');
+      return;
     }
     const res = await fetch(`${API_URL}/events`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(values),
     });
     if (!res.ok) {
+      if (res.status === 403 || res.status === 401) {
+        toast.error('No token included');
+        return;
+      }
       toast.error('Something Went Wrong');
     } else {
       const evt = await res.json();
@@ -142,3 +150,12 @@ const Add: NextPage = () => {
 };
 
 export default Add;
+
+export const getServerSideProps = async ({ req }) => {
+  const { token } = parseCookies(req);
+  return {
+    props: {
+      token,
+    },
+  };
+};

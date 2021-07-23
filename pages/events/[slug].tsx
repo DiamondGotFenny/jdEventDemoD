@@ -3,10 +3,10 @@ import { useRouter } from 'next/dist/client/router';
 import Layout from 'components/Layout';
 import { GetServerSideProps } from 'next';
 import { API_URL } from 'config/index';
-
 import Link from 'next/link';
 import Image from 'next/image';
 import styles from 'styles/Event.module.css';
+import EventMap from 'components/EventMap';
 type props = {
   evt: {
     id: string;
@@ -47,6 +47,7 @@ const EventPage: NextPage<props> = ({ evt }) => {
         <p>{evt.description}</p>
         <h3>Venue: {evt.venue}</h3>
         <p>{evt.address}</p>
+        <EventMap evt={evt} />
         <Link href="/events">
           <a className={styles.back}>{'<'} Go Back</a>
         </Link>

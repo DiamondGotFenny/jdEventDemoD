@@ -25,7 +25,7 @@ const Register = () => {
   const { register: registerReq, error } = useContext(AuthContext);
   useEffect(() => {
     error && toast.error(error);
-  });
+  }, [error]);
   //use for a ref to the password confirm form element
   const password = useRef({});
   password.current = watch('password', '');

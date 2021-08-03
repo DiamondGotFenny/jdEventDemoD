@@ -5,7 +5,7 @@ import styles from 'styles/modal.module.css';
 const Model = ({ show, onClose, children, title }) => {
   const [isBrowser, setIsBrowser] = useState(false);
 
-  useEffect(() => setIsBrowser(true));
+  useEffect(() => setIsBrowser(true), []);
 
   const handleClose = (e) => {
     e.preventDefault();
